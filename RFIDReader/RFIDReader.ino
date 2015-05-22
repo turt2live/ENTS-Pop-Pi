@@ -92,7 +92,7 @@ void loop(){
       Serial.println(String(cardNum, 10));
       
       int outputPin = 9;
-      if (cardNum == 5971042)
+      if (cardNum == 5964780)
         outputPin = 8;
       digitalWrite(outputPin, HIGH);
       delay(500);
