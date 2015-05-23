@@ -39,5 +39,5 @@ class CoinAcceptor:
         elif readValue == 0x1E:
             centValue = 200
         if centValue < 0:
-            raise ValueError("Cent value " + centValue + " is not valid")
+            raise ValueError("Cent value " + str(centValue) + " is not valid")
         return centValue
