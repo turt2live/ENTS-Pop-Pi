@@ -18,6 +18,8 @@ class RfidReader:
     def readCard(self):
         card = ""
         while card is None or len(card) <= 0:
-            card = self.__serial.read()
+            # TODO: Support errors from RFID
+            # Error code = "E:<error message>"
+            card = self.__serial.readline()
         cardNum = ord(card[0]) # Only care about the first byte
         return cardNum
