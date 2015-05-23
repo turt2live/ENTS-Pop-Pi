@@ -1,6 +1,14 @@
 import serial
 
 class RfidReader:
+    # Reads RFId from an Arduino (ideally).
+    # Protocol:
+    # - Linefeed indicates end of message
+    # - If message starts with 'E:' then the following characters
+    #   indicate the error that occurred.
+    # - If the message does not start with 'E:' then the message is
+    #   assumed as numeric and therefore a fob/card number.
+
     __comPort = '/dev/ttyACM0' # TODO: Configuration value
 
     def __init__(self):
@@ -23,3 +31,7 @@ class RfidReader:
             card = self.__serial.readline()
         cardNum = int(card)
         return cardNum
+
+    def shutdown(self):
+        self.__serial.close()
+        print("RFID reader shut down")
