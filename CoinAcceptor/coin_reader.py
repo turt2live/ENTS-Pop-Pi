@@ -15,6 +15,7 @@ class CoinAcceptor:
             bytesize = serial.EIGHTBITS,
             timeout = 0
         )
+        self.__serial.flush()
         print("Connected to serial port " + self.__serial.portstr)
 
     def inhibit(self, setInhibited):
@@ -26,15 +27,16 @@ class CoinAcceptor:
 
     def readCoin(self):
         coin = ""
-        while coin is not None and len(coin) > 0:
+        while coin is None or len(coin) <= 0:
             coin = self.__serial.read()
-        ch = ord(coin[0]) # Only care about first character (byte)
+        readValue = ord(coin[0]) # Only care about first character (byte)
         centValue = -1
-        if ch == 0x0A:
+        # TODO: Convert this if-else ladder to a configuration for the coin reader
+        if readValue == 0x0A:
             centValue = 25
-        elif ch == 0x14:
+        elif readValue == 0x14:
             centValue = 100
-        elif ch == 0x1E:
+        elif readValue == 0x1E:
             centValue = 200
         if centValue < 0:
             raise ValueError("Cent value " + centValue + " is not valid")
