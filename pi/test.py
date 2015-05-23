@@ -1,4 +1,4 @@
-from lib.coin_acceptor import CoinAcceptor
+from coin_acceptor import CoinAcceptor
 
 acceptor = CoinAcceptor()
 while 1:
