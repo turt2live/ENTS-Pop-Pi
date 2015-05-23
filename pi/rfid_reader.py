@@ -21,5 +21,5 @@ class RfidReader:
             # TODO: Support errors from RFID
             # Error code = "E:<error message>"
             card = self.__serial.readline()
-        cardNum = ord(card[0]) # Only care about the first byte
+        cardNum = int(card) # Only care about the first byte
         return cardNum
