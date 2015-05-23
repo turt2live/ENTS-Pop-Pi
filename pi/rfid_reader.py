@@ -1,7 +1,7 @@
 import serial
 
 class RfidReader:
-    __comPort = '/dev/ttyUSB0' # TODO: Configuration value
+    __comPort = '/dev/ttyACM0' # TODO: Configuration value
 
     def __init__(self):
         self.__serial = serial.Serial(
