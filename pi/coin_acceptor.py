@@ -1,4 +1,4 @@
-import serial, time
+import serial
 
 class CoinAcceptor:
     # Reads from the sparkfun 6-coin acceptor
@@ -16,7 +16,7 @@ class CoinAcceptor:
             timeout = 0
         )
         self.__serial.flush()
-        print("Connected to serial port " + self.__serial.portstr)
+        print("Coin acceptor connected to serial port " + self.__serial.portstr)
 
     def inhibit(self, setInhibited):
         # TODO: Actually do inhibiting

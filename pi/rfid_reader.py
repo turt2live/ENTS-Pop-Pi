@@ -1,0 +1,23 @@
+import serial
+
+class RfidReader:
+    __comPort = '/dev/ttyUSB0' # TODO: Configuration value
+
+    def __init__(self):
+        self.__serial = serial.Serial(
+            port = self.__comPort,
+            baudrate = 9600,
+            parity = serial.PARITY_NONE,
+            stopbits = serial.STOPBITS_ONE,
+            bytesize = serial.EIGHTBITS,
+            timeout = 0
+        )
+        self.__serial.flush()
+        print("RFID reader connected to serial port " + self.__serial.portstr)
+
+    def readCard(self):
+        card = ""
+        while card is None or len(card) <= 0:
+            card = self.__serial.read()
+        cardNum = ord(card[0]) # Only care about the first byte
+        return cardNum
