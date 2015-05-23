@@ -17,9 +17,9 @@ class CoinAcceptor:
         )
         print("Connected to serial port " + self.__serial.portstr)
 
-    def inhibit(self, inhibited):
+    def inhibit(self, setInhibited):
         # TODO: Actually do inhibiting
-        if !inhibited:
+        if not setInhibited:
             # Clear buffer if we're clearing our inhibit state
             self.__serial.flush()
         return
