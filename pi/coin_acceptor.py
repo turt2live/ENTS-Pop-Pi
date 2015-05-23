@@ -13,7 +13,7 @@ class CoinAcceptor:
             parity = serial.PARITY_EVEN,
             stopbits = serial.STOPBITS_ONE,
             bytesize = serial.EIGHTBITS,
-            timeout = 0
+            timeout = None # Wait forever
         )
         self.__serial.flush()
         print("Coin acceptor connected to serial port " + self.__serial.portstr)

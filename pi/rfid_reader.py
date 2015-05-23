@@ -10,7 +10,7 @@ class RfidReader:
             parity = serial.PARITY_NONE,
             stopbits = serial.STOPBITS_ONE,
             bytesize = serial.EIGHTBITS,
-            timeout = 0
+            timeout = None # Wait forever
         )
         self.__serial.flush()
         print("RFID reader connected to serial port " + self.__serial.portstr)
@@ -21,5 +21,6 @@ class RfidReader:
             # TODO: Support errors from RFID
             # Error code = "E:<error message>"
             card = self.__serial.readline()
-        cardNum = int(card) # Only care about the first byte
+            print "read = " + card
+        cardNum = int(card)
         return cardNum
