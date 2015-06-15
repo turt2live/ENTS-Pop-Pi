@@ -1,51 +1,7 @@
 <!doctype html>
 <html>
 <head>
-  <style type="text/css">
-  /* TODO: Style h1, h2, h3 */
-  body {
-    background-color: #ccc;
-  }
-  .ents-logo {
-    background-image: url("http://i.turt2live.com/qexp.png");
-    background-size: 650px;
-    background-repeat: no-repeat;
-    opacity: 0.2;
-    position: fixed;
-    top: 75px;
-    left: 25px;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-  }
-  .machine-container {
-    text-align: center;
-    width: 600px;
-    margin: auto;
-    margin-top: 100px;
-  }
-  .machine-container .amount-due {
-    font-size: 200px;
-  }
-  .machine-container .amount-credit, .machine-container .amount-entered {
-    font-size: 50px;
-    margin-top: 30px;
-  }
-  .machine-container .amount-credit {
-    float: left;
-  }
-  .machine-container .amount-entered {
-    float: right;
-  }
-  .machine-container .credit-warning {
-    width: 100%;
-    float: left;
-  }
-  .text-small {
-    font-size: 20px;
-    color: #7B7B7B;
-  }
-  </style>
+  <link rel='stylesheet' href='/static/style.css' type='text/css' />
 </head>
 <body>
     <div class='ents-logo'></div>
@@ -86,92 +42,6 @@
     <!-- Scripts -->
     <script src="/static/socket.io.js"></script>
     <script src="/static/jquery-2.1.4.min.js"></script>
-    <script>
-      var member = {
-        newCredit: 0,
-        credit: 0,
-        deposited: 0,
-        cost: 0 // Technically not member info, but whatever
-      };
-      $(document).ready(function(){
-        var socket = io.connect('/pop');
-        socket.on('connect', function(){
-          onConnect();
-        });
-        socket.on('member-swipe', function(credit, cost){
-          member.credit = credit;
-          member.cost = cost;
-          member.deposited = 0;
-          onSwipe();
-        });
-        socket.on('deposit', function(amountDeposited){
-          member.deposited += amountDeposited;
-          onDeposit();
-        });
-        socket.on('paid', function(newCredit){
-          member.newCredit = newCredit;
-          onPaid();
-        });
-        socket.on('not-found', function(){
-          onMemberNotFound();
-        });
-      });
-
-      function onMemberNotFound(){
-        $("#idle").hide();
-        $("#paying").hide();
-        $("#thanks").hide();
-        $("#not-a-member").show();
-        // TODO: Show idle after 15 seconds
-      }
-
-      function onPaid(){
-        $("#idle").hide();
-        $("#paying").hide();
-        $("#thanks").show();
-        $("#not-a-member").hide();
-        $("#new-credit").html(toCurrency(member.newCredit))
-        // TODO: Show idle after 15 seconds
-      }
-
-      function onDeposit(){
-        updateDeposited();
-        updateAmountDue();
-      }
-
-      function onSwipe(){
-        $("#idle").hide();
-        $("#paying").show();
-        $("#thanks").hide();
-        $("#not-a-member").hide();
-
-        $("#paying-credit").html(toCurrency(member.credit));
-        updateAmountDue();
-        updateDeposited();
-      }
-
-      function onConnect(){
-        $("#idle").show();
-        $("#paying").hide();
-        $("#thanks").hide();
-        $("#not-a-member").hide();
-      }
-
-      function updateDeposited(){
-        $("#paying-deposited").html(toCurrency(member.deposited));
-      }
-
-      function updateAmountDue(){
-        var due = member.cost - member.credit - member.deposited;
-        if(due < 0) return;
-        $("#paying-amount-due").html(toCurrency(due));
-      }
-
-      function toCurrency(amount){
-        var dollars = (amount / 100).toFixed(2);
-        var sign = dollars >= 0 ? "$" : "-$";
-        return sign + dollars;
-      }
-    </script>
+    <script src="/static/script.js"></script>
 </body>
 </html>
