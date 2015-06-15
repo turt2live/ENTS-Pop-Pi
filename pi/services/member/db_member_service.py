@@ -1,9 +1,8 @@
-from member_service import MemberService
-from db_member import DbMember
-
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, subqueryload, relationship, backref
+from member_service import MemberService
+from db_member import DbMember
 
 engine = create_engine('mysql+mysqldb://mcp:mcp@172.16.0.26/mcp') # TODO: This really needs to be configurable (username:password@host/db)
 class DbMemberService(MemberService):
@@ -24,7 +23,6 @@ class DbMemberService(MemberService):
         dbMember.wallets.append(newWallet)
         self.session.commit() # Save changes
         return newWallet
-
 
     def getMember(self, memberId):
         wallet = self.__findWallet__(memberId)
@@ -51,6 +49,7 @@ class DbMemberService(MemberService):
     def shutdown(self):
         return # Nothing to do?
 
+# TODO: Are these best placed here?
 Base = declarative_base()
 class OrmWallet(Base):
     __tablename__ = 'wallets'
