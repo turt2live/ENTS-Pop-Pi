@@ -72,7 +72,7 @@ void setup(){
   rfidData.count = 0;
   rfidData.buffer = 0;
   rfidData.lastRead = 0;
-  
+
   pinMode(8, OUTPUT);
   pinMode(9, OUTPUT);
   digitalWrite(8, LOW);
@@ -86,11 +86,11 @@ void loop(){
     if (checkWiegandParity(cardNum)) {
       // Failed: Invalid parity from RFID reader
       Serial.println("E:Failed to check parity");
-    } 
+    }
     else {
       cardNum = (cardNum >> 1) & 0xFFFFFF;
       Serial.println(String(cardNum, 10));
-      
+
       int outputPin = 9;
       if (cardNum == 5964780)
         outputPin = 8;
@@ -101,7 +101,7 @@ void loop(){
 
     rfidData.count = 0;
     rfidData.buffer = 0;
-  } 
+  }
   else if (rfidData.count > 0 && (millis() - rfidData.lastRead) > readTimeout) {
     // Error: Failed to read from RFID reader
     Serial.println("E:Failed to read from RFID reader");
@@ -109,4 +109,3 @@ void loop(){
     rfidData.buffer = 0;
   }
 }
-
