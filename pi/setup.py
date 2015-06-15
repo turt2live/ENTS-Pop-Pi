@@ -6,6 +6,8 @@ setup(name='ents-poppi',
       url='https://github.com/turt2live/ENTS-Pop-Pi',
       install_requires=[
           'RPi.GPIO',
-          'gevent-socketio'
+          'gevent-socketio',
+          #'MySQLdb', # sudo apt-get install python-mysqldb
+          'SQLAlchemy'
       ],
       zip_safe=False)

@@ -3,7 +3,7 @@ from coin_acceptor import CoinAcceptor
 from rfid_reader import RfidReader
 from pop_machine import PopMachine
 from web import WebService
-from services.member.simple_member_service import SimpleMemberService as MemberService
+from services.member.db_member_service import DbMemberService as MemberService
 
 rfid = None
 acceptor = None
