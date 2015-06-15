@@ -26,6 +26,7 @@ try:
 
         member = memberService.getMember(card)
         if member is None:
+            webService.onNotFound()
             print("Member does not exist")
         else:
             credit = member.getCredit()

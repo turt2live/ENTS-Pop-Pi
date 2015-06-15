@@ -2,6 +2,7 @@
 <html>
 <head>
   <style type="text/css">
+  /* TODO: Style h1, h2, h3 */
   body {
     background-color: #ccc;
   }
@@ -51,7 +52,7 @@
 
     <div class='machine-container'>
       <!-- Idle state -->
-      <div id='idle'>
+      <div id='idle' style='display: none;'>
         <h1>Please swipe fob to begin</h1>
       </div>
       <!-- When the user is paying for pop -->
@@ -74,6 +75,12 @@
         <h2>Please press the pop button of your choice.</h2>
         <h3>Your new credit is <span id="new-credit">$0.00</span></h3>
       </div>
+      <!-- Member not found state -->
+      <div id='not-a-member' style='display: none;'>
+        <h1>404</h1>
+        <h2>Your card is not registered within the system.</h2>
+        <h3>If you believe this is an error, please contact <a href="">directors@ents.ca</a></h3>
+      </div>
     </div>
 
     <!-- Scripts -->
@@ -88,6 +95,9 @@
       };
       $(document).ready(function(){
         var socket = io.connect('/pop');
+        socket.on('connect', function(){
+          onConnect();
+        });
         socket.on('member-swipe', function(credit, cost){
           member.credit = credit;
           member.cost = cost;
@@ -102,12 +112,24 @@
           member.newCredit = newCredit;
           onPaid();
         });
+        socket.on('not-found', function(){
+          onMemberNotFound();
+        });
       });
+
+      function onMemberNotFound(){
+        $("#idle").hide();
+        $("#paying").hide();
+        $("#thanks").hide();
+        $("#not-a-member").show();
+        // TODO: Show idle after 15 seconds
+      }
 
       function onPaid(){
         $("#idle").hide();
         $("#paying").hide();
         $("#thanks").show();
+        $("#not-a-member").hide();
         $("#new-credit").html(toCurrency(member.newCredit))
         // TODO: Show idle after 15 seconds
       }
@@ -121,10 +143,18 @@
         $("#idle").hide();
         $("#paying").show();
         $("#thanks").hide();
+        $("#not-a-member").hide();
 
         $("#paying-credit").html(toCurrency(member.credit));
         updateAmountDue();
         updateDeposited();
+      }
+
+      function onConnect(){
+        $("#idle").show();
+        $("#paying").hide();
+        $("#thanks").hide();
+        $("#not-a-member").hide();
       }
 
       function updateDeposited(){
@@ -133,6 +163,7 @@
 
       function updateAmountDue(){
         var due = member.cost - member.credit - member.deposited;
+        if(due < 0) return;
         $("#paying-amount-due").html(toCurrency(due));
       }
 

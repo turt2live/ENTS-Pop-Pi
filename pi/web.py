@@ -74,5 +74,8 @@ class WebService:
     def onPaid(self, newCredit):
         self.__broadcast("paid", newCredit)
 
+    def onNotFound(self):
+        self.__broadcast("not-found")
+
     def shutdown(self):
         return # Nothing to do
