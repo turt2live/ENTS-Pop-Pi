@@ -47,33 +47,100 @@
   </style>
 </head>
 <body>
-    <div id='test' style='font-size: 200px; display: none; text-align: center;'>
-      Loading
-    </div>
     <div class='ents-logo'></div>
 
     <div class='machine-container'>
-      <div class='amount-due'>
-        $1.00
+      <!-- Idle state -->
+      <div id='idle'>
+        <h1>Please swipe fob to begin</h1>
       </div>
-      <div class='text-small' style='border-bottom: 1px solid rgb(173, 173, 173); padding-bottom: 15px; width: 100%;'>remaining cost</div>
-      <div class='amount-credit'>
-        $0.50 <span class='text-small'>credit</span>
+      <!-- When the user is paying for pop -->
+      <div id='paying' style='display: none;'>
+        <div class='amount-due' id='paying-amount-due'>
+          $0.00
+        </div>
+        <div class='text-small' style='border-bottom: 1px solid rgb(173, 173, 173); padding-bottom: 15px; width: 100%;'>remaining cost</div>
+        <div class='amount-credit'>
+          <span id='paying-credit'>$0.00</span> <span class='text-small'>credit</span>
+        </div>
+        <div class='amount-entered'>
+          <span class='text-small'>deposited</span> <span id='paying-deposited'>$0.00</span>
+        </div>
+        <p class='credit-warning'>Any extra funds will be applied to your credit for next time</p>
       </div>
-      <div class='amount-entered'>
-        <span class='text-small'>deposited</span> $0.00
+      <!-- Thank you state -->
+      <div id='thanks' style='display: none;'>
+        <h1>Thank you!</h1>
+        <h2>Please press the pop button of your choice.</h2>
+        <h3>Your new credit is <span id="new-credit">$0.00</span></h3>
       </div>
-      <p class='credit-warning'>Any extra funds will be applied to your credit for next time</p>
     </div>
 
     <!-- Scripts -->
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="/static/socket.io.js"></script>
+    <script src="/static/jquery-2.1.4.min.js"></script>
     <script>
-      var socket = io.connect('http://172.16.0.11');
-      socket.on('test', function (data) {
-        document.getElementById("test").innerHTML = data;
-        socket.emit("test", "Hello there!");
+      var member = {
+        newCredit: 0,
+        credit: 0,
+        deposited: 0,
+        cost: 0 // Technically not member info, but whatever
+      };
+      $(document).ready(function(){
+        var socket = io.connect('/pop');
+        socket.on('member-swipe', function(credit, cost){
+          member.credit = credit;
+          member.cost = cost;
+          member.deposited = 0;
+          onSwipe();
+        });
+        socket.on('deposit', function(amountDeposited){
+          member.deposited += amountDeposited;
+          onDeposit();
+        });
+        socket.on('paid', function(newCredit){
+          member.newCredit = newCredit;
+          onPaid();
+        });
       });
+
+      function onPaid(){
+        $("#idle").hide();
+        $("#paying").hide();
+        $("#thanks").show();
+        $("#new-credit").html(toCurrency(member.newCredit))
+        // TODO: Show idle after 15 seconds
+      }
+
+      function onDeposit(){
+        updateDeposited();
+        updateAmountDue();
+      }
+
+      function onSwipe(){
+        $("#idle").hide();
+        $("#paying").show();
+        $("#thanks").hide();
+
+        $("#paying-credit").html(toCurrency(member.credit));
+        updateAmountDue();
+        updateDeposited();
+      }
+
+      function updateDeposited(){
+        $("#paying-deposited").html(toCurrency(member.deposited));
+      }
+
+      function updateAmountDue(){
+        var due = member.cost - member.credit - member.deposited;
+        $("#paying-amount-due").html(toCurrency(due));
+      }
+
+      function toCurrency(amount){
+        var dollars = (amount / 100).toFixed(2);
+        var sign = dollars >= 0 ? "$" : "-$";
+        return sign + dollars;
+      }
     </script>
 </body>
 </html>
