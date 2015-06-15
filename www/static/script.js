@@ -5,11 +5,15 @@ var member = {
   cost: 0 // Technically not member info, but whatever
 };
 
+var toIdleTimer = null; // when not null then a countdown to 'idle' is pending
+var timeoutTime = 15000; // ms
+
+// JQUERY INIT
+// ===============================
+
 $(document).ready(function(){
   var socket = io.connect('/pop');
-  socket.on('connect', function(){
-    onConnect();
-  });
+  socket.on('connect', onConnect);
   socket.on('member-swipe', function(credit, cost){
     member.credit = credit;
     member.cost = cost;
@@ -24,18 +28,11 @@ $(document).ready(function(){
     member.newCredit = newCredit;
     onPaid();
   });
-  socket.on('not-found', function(){
-    onMemberNotFound();
-  });
+  socket.on('not-found', onMemberNotFound);
 });
 
-function onMemberNotFound(){
-  $("#idle").hide();
-  $("#paying").hide();
-  $("#thanks").hide();
-  $("#not-a-member").show();
-  // TODO: Show idle after 15 seconds
-}
+// SOCKET FUNCTIONS
+// ===============================
 
 function onPaid(){
   $("#idle").hide();
@@ -43,7 +40,21 @@ function onPaid(){
   $("#thanks").show();
   $("#not-a-member").hide();
   $("#new-credit").html(toCurrency(member.newCredit))
-  // TODO: Show idle after 15 seconds
+  toIdleTimer = setTimeout(toIdle, timeoutTime);
+}
+
+function toIdle(){
+  $("#idle").show();
+  $("#paying").hide();
+  $("#thanks").hide();
+  $("#not-a-member").hide();
+}
+
+function onConnect(){
+  $("#idle").show();
+  $("#paying").hide();
+  $("#thanks").hide();
+  $("#not-a-member").hide();
 }
 
 function onDeposit(){
@@ -60,14 +71,21 @@ function onSwipe(){
   $("#paying-credit").html(toCurrency(member.credit));
   updateAmountDue();
   updateDeposited();
+
+  if (toIdleTimer)
+    clearTimeout(toIdleTimer);
 }
 
-function onConnect(){
-  $("#idle").show();
+function onMemberNotFound(){
+  $("#idle").hide();
   $("#paying").hide();
   $("#thanks").hide();
-  $("#not-a-member").hide();
+  $("#not-a-member").show();
+  toIdleTimer = setTimeout(toIdle, timeoutTime);
 }
+
+// HELPERS
+// ===============================
 
 function updateDeposited(){
   $("#paying-deposited").html(toCurrency(member.deposited));
