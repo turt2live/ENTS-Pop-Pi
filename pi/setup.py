@@ -8,6 +8,7 @@ setup(name='ents-poppi',
           'RPi.GPIO',
           'gevent-socketio',
           #'MySQLdb', # sudo apt-get install python-mysqldb
-          'SQLAlchemy'
+          'SQLAlchemy',
+          'configobj'
       ],
       zip_safe=False)

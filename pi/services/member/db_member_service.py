@@ -4,9 +4,11 @@ from sqlalchemy.orm import sessionmaker, subqueryload, relationship, backref
 from member_service import MemberService
 from db_member import DbMember
 
-engine = create_engine('mysql+mysqldb://mcp:mcp@172.16.0.26/mcp') # TODO: This really needs to be configurable (username:password@host/db)
 class DbMemberService(MemberService):
-    def __init__(self):
+    def __init__(self, configuration):
+        conf = configuration.db
+        connectionString = 'mysql+mysqldb://' + conf.username + ':' + conf.password + '@' + conf.hostname + ':' + conf.port + '/' + conf.database
+        engine = create_engine(connectionString)
         self.session = sessionmaker(bind=engine)()
 
     def __findWallet__(self, memberId):

@@ -1,4 +1,6 @@
 class MemberService(object):
+    def __init__(self, configuration):
+        pass
     def getMember(self, memberId):
         pass
     def awardCredit(self, memberId, cents):

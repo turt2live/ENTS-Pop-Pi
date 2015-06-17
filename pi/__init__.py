@@ -3,6 +3,7 @@ from coin_acceptor import CoinAcceptor
 from rfid_reader import RfidReader
 from pop_machine import PopMachine
 from web import WebService
+from config import Configuration
 from services.member.db_member_service import DbMemberService as MemberService
 
 rfid = None
@@ -10,11 +11,12 @@ acceptor = None
 memberService = None
 popMachine = None
 webService = None
+conf = Configuration()
 try:
     GPIO.setmode(GPIO.BOARD)
     rfid = RfidReader()
     acceptor = CoinAcceptor()
-    memberService = MemberService()
+    memberService = MemberService(conf)
     popMachine = PopMachine()
     webService = WebService()
 
