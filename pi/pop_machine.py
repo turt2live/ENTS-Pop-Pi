@@ -6,6 +6,7 @@ class PopMachine:
     # to mask implementation details.
 
     def __init__(self, relayPin):
+        self.__relayPin = relayPin
         GPIO.setup(self.__relayPin, GPIO.OUT)
         GPIO.output(self.__relayPin, GPIO.LOW)
 

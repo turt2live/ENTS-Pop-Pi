@@ -10,7 +10,7 @@ class Configuration:
         config = ConfigObj(path)
         self.db = DbInfo(config['MySQL'])
         self.rfid = RfidInfo(config['RFID'])
-        self.popMachine = PopMachineInfo(config[]'PopMachine'])
+        self.popMachine = PopMachineInfo(config['PopMachine'])
         self.coinAcceptor = CoinAcceptorInfo(config['CoinAcceptor'])
         self.coinMap = CoinMapInfo(config['CoinMap'])
         self.web = WebInfo(config['Web'])
@@ -29,16 +29,16 @@ class RfidInfo:
 
 class PopMachineInfo:
     def __init__(self, section):
-        self.relayPin = section['relayPin']
+        self.relayPin = int(section['relayPin'])
 
 class CoinAcceptorInfo:
     def __init__(self, section):
-        self.inhibitPin = section['inhibitPin']
+        self.inhibitPin = int(section['inhibitPin'])
         self.serialPort = section['serialPort']
 
 class WebInfo:
     def __init__(self, section):
-        self.port = section['port']
+        self.port = int(section['port'])
         self.bindAddress = section['bindAddress']
 
 class CoinMapInfo:
@@ -46,5 +46,5 @@ class CoinMapInfo:
         self.__section = section
 
     def getCentValue(self, numericValue):
-        asStr = "0x%X" % numericValue
-        return self.__section[asStr]
+        asStr = "0x%02X" % numericValue
+        return int(self.__section[asStr])
