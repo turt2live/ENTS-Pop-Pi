@@ -69,6 +69,7 @@ class WebService:
         for sessid, socket in self.server.sockets.iteritems():
             socket.send_packet(pkt)
 
+    # TODO: These "on" methods should be handled by Observer...
     def onSwipe(self, credit, cost):
         self.__broadcast("member-swipe", credit, cost)
 
