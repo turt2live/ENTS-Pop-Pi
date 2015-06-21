@@ -11,7 +11,8 @@ class RfidReader:
 
     __comPort = '/dev/ttyACM0' # TODO: Configuration value
 
-    def __init__(self):
+    def __init__(self, observer):
+        self.__obs = observer
         self.__serial = serial.Serial(
             port = self.__comPort,
             baudrate = 9600,
@@ -24,6 +25,7 @@ class RfidReader:
         print("RFID reader connected to serial port " + self.__serial.portstr)
 
     def readCard(self):
+        self.__serial.flush()
         card = ""
         while card is None or len(card) <= 0:
             # TODO: Support errors from RFID
@@ -31,6 +33,16 @@ class RfidReader:
             card = self.__serial.readline()
         cardNum = int(card)
         return cardNum
+
+    def __read(self):
+        while True:
+            card = self.readCard()
+            self.__obs.trigger("cardswiped", card)
+
+    def startReading(self):
+        self.thread = threading.Thread(target=self.__read)
+        self.thread.daemon = True
+        self.thread.start()
 
     def shutdown(self):
         self.__serial.close()

@@ -40,6 +40,7 @@ class CoinAcceptor:
             print("Coin acceptor inhibited")
 
     def readCoin(self):
+        self.__serial.flush()
         coin = ""
         while coin is None or len(coin) <= 0:
             coin = self.__serial.read()

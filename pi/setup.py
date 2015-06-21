@@ -9,6 +9,7 @@ setup(name='ents-poppi',
           'gevent-socketio',
           #'MySQLdb', # sudo apt-get install python-mysqldb
           'SQLAlchemy',
-          'configobj'
+          'configobj',
+          'observable'
       ],
       zip_safe=False)
