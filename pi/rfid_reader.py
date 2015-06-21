@@ -11,8 +11,7 @@ class RfidReader:
 
     __comPort = '/dev/ttyACM0' # TODO: Configuration value
 
-    def __init__(self, observer):
-        self.__obs = observer
+    def __init__(self):
         self.__serial = serial.Serial(
             port = self.__comPort,
             baudrate = 9600,
@@ -33,16 +32,6 @@ class RfidReader:
             card = self.__serial.readline()
         cardNum = int(card)
         return cardNum
-
-    def __read(self):
-        while True:
-            card = self.readCard()
-            self.__obs.trigger("cardswiped", card)
-
-    def startReading(self):
-        self.thread = threading.Thread(target=self.__read)
-        self.thread.daemon = True
-        self.thread.start()
 
     def shutdown(self):
         self.__serial.close()

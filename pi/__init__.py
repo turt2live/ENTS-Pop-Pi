@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+from observable import Observable
 from coin_acceptor import CoinAcceptor
 from rfid_reader import RfidReader
 from pop_machine import PopMachine
@@ -6,6 +7,7 @@ from web import WebService
 from config import Configuration
 from services.member.db_member_service import DbMemberService as MemberService
 
+obs = Observable()
 rfid = None
 acceptor = None
 memberService = None
