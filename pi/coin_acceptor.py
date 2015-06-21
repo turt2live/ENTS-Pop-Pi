@@ -7,13 +7,13 @@ class CoinAcceptor:
 
     # Coin reader configuration: 0011 (DIP switches)
 
-    __comPort = '/dev/ttyAMA0' # TODO: Configuration variable
-    __inhibitPin = 12 # Board number # TODO: Configuration value
     __inhibited = False
 
-    def __init__(self):
+    def __init__(self, comPort, inhibitPin, coinMap):
+        self.__inhibitPin = inhibitPin
+        self.__coinMap = coinMap
         self.__serial = serial.Serial(
-            port = self.__comPort,
+            port = comPort,
             baudrate = 9600,
             parity = serial.PARITY_EVEN,
             stopbits = serial.STOPBITS_ONE,
@@ -45,15 +45,8 @@ class CoinAcceptor:
         while coin is None or len(coin) <= 0:
             coin = self.__serial.read()
         readValue = ord(coin[0]) # Only care about first character (byte)
-        centValue = -1
-        # TODO: Convert this if-else ladder to a configuration for the coin reader
-        if readValue == 0x0A:
-            centValue = 25
-        elif readValue == 0x14:
-            centValue = 100
-        elif readValue == 0x1E:
-            centValue = 200
-        if centValue < 0:
+        centValue = self.__coinMap.getCentValue(readValue)
+        if centValue is None:
             raise ValueError("Cent value " + str(centValue) + " is not valid (raw = " + str(readValue) + ")")
         return centValue
 

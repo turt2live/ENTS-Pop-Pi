@@ -1,13 +1,12 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, subqueryload, relationship, backref
-from member_service import MemberService
-from db_member import DbMember
 
-class DbMemberService(MemberService):
-    def __init__(self, configuration):
-        conf = configuration.db
-        connectionString = 'mysql+mysqldb://' + conf.username + ':' + conf.password + '@' + conf.hostname + ':' + conf.port + '/' + conf.database
+class MemberService():
+    # Provides member information from a MySQL database
+
+    def __init__(self, username, password, hostname, port, database):
+        connectionString = 'mysql+mysqldb://' + username + ':' + password + '@' + hostname + ':' + port + '/' + database
         engine = create_engine(connectionString)
         self.session = sessionmaker(bind=engine)()
 
@@ -26,11 +25,11 @@ class DbMemberService(MemberService):
         self.session.commit() # Save changes
         return newWallet
 
-    def getMember(self, memberId):
+    def getCredit(self, memberId):
         wallet = self.__findWallet__(memberId)
         if wallet is None:
             return None
-        return DbMember(wallet.balance)
+        return wallet.balance
 
     def awardCredit(self, memberId, cents):
         wallet = self.__findWallet__(memberId)

@@ -9,11 +9,9 @@ class RfidReader:
     # - If the message does not start with 'E:' then the message is
     #   assumed as numeric and therefore a fob/card number.
 
-    __comPort = '/dev/ttyACM0' # TODO: Configuration value
-
-    def __init__(self):
+    def __init__(self, comPort):
         self.__serial = serial.Serial(
-            port = self.__comPort,
+            port = comPort,
             baudrate = 9600,
             parity = serial.PARITY_NONE,
             stopbits = serial.STOPBITS_ONE,

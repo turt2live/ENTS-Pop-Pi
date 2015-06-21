@@ -9,6 +9,11 @@ class Configuration:
             copyfile("poppi.conf", path)
         config = ConfigObj(path)
         self.db = DbInfo(config['MySQL'])
+        self.rfid = RfidInfo(config['RFID'])
+        self.popMachine = PopMachineInfo(config[]'PopMachine'])
+        self.coinAcceptor = CoinAcceptorInfo(config['CoinAcceptor'])
+        self.coinMap = CoinMapInfo(config['CoinMap'])
+        self.web = WebInfo(config['Web'])
 
 class DbInfo:
     def __init__(self, section):
@@ -17,3 +22,29 @@ class DbInfo:
         self.hostname = section['hostname']
         self.database = section['database']
         self.port = section['port']
+
+class RfidInfo:
+    def __init__(self, section):
+        self.serialPort = section['serialPort']
+
+class PopMachineInfo:
+    def __init__(self, section):
+        self.relayPin = section['relayPin']
+
+class CoinAcceptorInfo:
+    def __init__(self, section):
+        self.inhibitPin = section['inhibitPin']
+        self.serialPort = section['serialPort']
+
+class WebInfo:
+    def __init__(self, section):
+        self.port = section['port']
+        self.bindAddress = section['bindAddress']
+
+class CoinMapInfo:
+    def __init__(self, section):
+        self.__section = section
+
+    def getCentValue(self, numericValue):
+        asStr = "0x%X" % numericValue
+        return self.__section[asStr]

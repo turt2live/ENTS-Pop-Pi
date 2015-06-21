@@ -5,9 +5,7 @@ class PopMachine:
     # Manipulates the pop machine interface. Should be designed
     # to mask implementation details.
 
-    __relayPin = 18 # TODO: Configuration value
-
-    def __init__(self):
+    def __init__(self, relayPin):
         GPIO.setup(self.__relayPin, GPIO.OUT)
         GPIO.output(self.__relayPin, GPIO.LOW)
 

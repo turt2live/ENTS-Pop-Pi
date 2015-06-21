@@ -43,19 +43,21 @@ def not_found(start_response):
     return ['<h1>Not Found</h1>']
 
 class WebService:
-    def __init__(self):
-        print("Web server starting...");
+    def __init__(self, bindAddress, port):
+        print("Web server starting on {bindAddress}:{port} ...");
+        self.__port = port
+        self.__bindAddr = bindAddress
         self.webThread = threading.Thread(target=self.__start)
         self.webThread.daemon = True
         self.webThread.start()
 
     def __start(self):
-        self.server = SocketIOServer(('0.0.0.0', 8080), Application())
+        self.server = SocketIOServer((self.__bindAddr, self.__port), Application())
         gevent.spawn(self.__onStart)
         self.server.serve_forever()
 
     def __onStart(self):
-        print "Web server started"
+        print "Web server started on {self.__bindAddr}:{self.__port} "
 
     def __broadcast(self, eventName, *args):
         pkt = dict(type="event",
