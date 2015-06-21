@@ -4,7 +4,7 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 .ents-logo {
-  background-image: url("http://i.turt2live.com/qexp.png");
+  background-image: url("/static/logo-large.png");
   background-size: 650px;
   background-repeat: no-repeat;
   opacity: 0.2;
