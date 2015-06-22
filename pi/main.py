@@ -1,4 +1,5 @@
 import threading
+import RPi.GPIO as GPIO
 from time import sleep
 from observable import Observable
 from coin_acceptor import CoinAcceptor
@@ -21,8 +22,7 @@ class PopPi:
 
     def __init__(self):
         self.__obs = Observable()
-        self.__config = Configuration()
-        conf = self.__config
+        conf = Configuration()
         self.__rfid = RfidReader(conf.rfid.serialPort)
         self.__acceptor = CoinAcceptor(conf.coinAcceptor.serialPort, conf.coinAcceptor.inhibitPin, conf.coinMap)
         self.__memberService = MemberService(conf.db.username, conf.db.password, conf.db.hostname, conf.db.port, conf.db.database)
@@ -34,6 +34,7 @@ class PopPi:
         self.__obs.on("CoinAccepted", self.__onCoinAccepted)
         self.__obs.on("MemberNotFound", self.__onMemberNotFound)
         self.__obs.on("PopPaid", self.__onPopPaid)
+        self.__creditOnlyPin = conf.general.creditOnlyPin
 
     def start(self):
         self.__fobThread = threading.Thread(target=self.__readCardThread)

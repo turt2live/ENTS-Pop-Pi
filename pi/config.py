@@ -8,12 +8,17 @@ class Configuration:
         if not os.path.exists(path):
             copyfile("poppi.conf", path)
         config = ConfigObj(path)
+        self.general = GeneralInfo(config['General'])
         self.db = DbInfo(config['MySQL'])
         self.rfid = RfidInfo(config['RFID'])
         self.popMachine = PopMachineInfo(config['PopMachine'])
         self.coinAcceptor = CoinAcceptorInfo(config['CoinAcceptor'])
         self.coinMap = CoinMapInfo(config['CoinMap'])
         self.web = WebInfo(config['Web'])
+
+class GeneralInfo:
+    def __init__(self, section):
+        self.creditOnlyPin = int(section['creditOnlyPin'])
 
 class DbInfo:
     def __init__(self, section):
