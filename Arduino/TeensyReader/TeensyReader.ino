@@ -52,10 +52,10 @@ void readD1(){
 }
 
 void configureRfid(){
-  pinMode(5, INPUT_PULLUP); // 5 = D0 (Green)
-  attachInterrupt(5, readD0, FALLING);
-  pinMode(6, INPUT_PULLUP); // 6 = D1 (White)
-  attachInterrupt(6, readD1, FALLING);
+  pinMode(2, INPUT_PULLUP); // 5 = D0 (Green)
+  attachInterrupt(2, readD0, FALLING);
+  pinMode(3, INPUT_PULLUP); // 6 = D1 (White)
+  attachInterrupt(3, readD1, FALLING);
 }
 
 // The time before RFID data is purged
