@@ -1,5 +1,3 @@
-#include <PinChangeInt.h>
-
 typedef struct {
   volatile int count;
   volatile unsigned long buffer;
@@ -55,9 +53,9 @@ void readD1(){
 
 void configureRfid(){
   pinMode(5, INPUT_PULLUP); // 5 = D0 (Green)
-  PCintPort::attachInterrupt(5, readD0, FALLING);
+  attachInterrupt(5, readD0, FALLING);
   pinMode(6, INPUT_PULLUP); // 6 = D1 (White)
-  PCintPort::attachInterrupt(6, readD1, FALLING);
+  attachInterrupt(6, readD1, FALLING);
 }
 
 // The time before RFID data is purged
@@ -72,11 +70,6 @@ void setup(){
   rfidData.count = 0;
   rfidData.buffer = 0;
   rfidData.lastRead = 0;
-
-  pinMode(8, OUTPUT);
-  pinMode(9, OUTPUT);
-  digitalWrite(8, LOW);
-  digitalWrite(9, LOW);
 }
 
 void loop(){
@@ -90,13 +83,6 @@ void loop(){
     else {
       cardNum = (cardNum >> 1) & 0xFFFFFF;
       Serial.println(String(cardNum, 10));
-
-      int outputPin = 9;
-      if (cardNum == 5964780)
-        outputPin = 8;
-      digitalWrite(outputPin, HIGH);
-      delay(500);
-      digitalWrite(outputPin, LOW);
     }
 
     rfidData.count = 0;

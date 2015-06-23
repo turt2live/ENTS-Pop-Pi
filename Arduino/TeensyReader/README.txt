@@ -1,0 +1,1 @@
+This assumes you are using the Teensy 3.1 board.
