@@ -46,9 +46,9 @@ def not_found(start_response):
 
 class WebService:
     def __init__(self, bindAddress, port):
-        print("Web server starting on {bindAddress}:{port} ...");
         self.__port = port
         self.__bindAddr = bindAddress
+        print("Web server starting on " + self.__bindAddr + ":" + str(self.__port) + "...");
         self.webThread = threading.Thread(target=self.__start)
         self.webThread.daemon = True
         self.webThread.start()
@@ -59,7 +59,7 @@ class WebService:
         self.server.serve_forever()
 
     def __onStart(self):
-        print "Web server started on {self.__bindAddr}:{self.__port} "
+        print("Web server started on " + self.__bindAddr + ":" + str(self.__port))
 
     def __broadcast(self, eventName, *args):
         pkt = dict(type="event",
