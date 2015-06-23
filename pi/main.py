@@ -76,6 +76,8 @@ class PopPi:
         self.__webService.onSwipe(self.__memberCredit, self.__popCost)
         requiredFunds = self.__getRequiredFunds()
         print("Member " + str(card) + " needs to supply " + str(requiredFunds) + " cents")
+        if self.__getRequiredFunds() <= 0:
+            self.__obs.trigger("PopPaid")
 
     def __onCoinAccepted(self, coin):
         if not self.__acceptingFunds:
