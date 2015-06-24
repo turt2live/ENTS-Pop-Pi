@@ -12,6 +12,11 @@
       <div id='idle' style='display: none;'>
         <h1>Please swipe fob to begin</h1>
       </div>
+      <!-- When the member has just swiped their card -->
+      <div id='lookup-started' style='display: none;'>
+        <h1>Looking up fob...</h1>
+        <h2>Please be patient. I'm just a Raspberry Pi</h2>
+      </div>
       <!-- When the user is paying for pop -->
       <div id='paying' style='display: none;'>
         <div class='amount-due' id='paying-amount-due'>
@@ -19,10 +24,24 @@
         </div>
         <div class='text-small' style='border-bottom: 1px solid rgb(173, 173, 173); padding-bottom: 15px; width: 100%;'>remaining cost</div>
         <div class='amount-credit'>
-          <span id='paying-credit'>$0.00</span> <span class='text-small'>credit</span>
+          <span class='paying-credit'>$0.00</span> <span class='text-small'>credit</span>
         </div>
         <div class='amount-entered'>
-          <span class='text-small'>deposited</span> <span id='paying-deposited'>$0.00</span>
+          <span class='text-small'>deposited</span> <span class='paying-deposited'>$0.00</span>
+        </div>
+        <p class='credit-warning'>Any extra funds will be applied to your credit for next time</p>
+      </div>
+      <!-- When the user is adding credit -->
+      <div id='credit-only' style='display: none;'>
+        <div class='amount-due' id='deposited-credit'>
+          $0.00
+        </div>
+        <div class='text-small' style='border-bottom: 1px solid rgb(173, 173, 173); padding-bottom: 15px; width: 100%;'>new credit amount</div>
+        <div class='amount-credit'>
+          <span class='paying-credit'>$0.00</span> <span class='text-small'>past credit</span>
+        </div>
+        <div class='amount-entered'>
+          <span class='text-small'>deposited</span> <span class='paying-deposited'>$0.00</span>
         </div>
         <p class='credit-warning'>Any extra funds will be applied to your credit for next time</p>
       </div>
@@ -31,6 +50,11 @@
         <h1>Thank you!</h1>
         <h2>Please press the pop button of your choice.</h2>
         <h3>Your new credit is <span id="new-credit">$0.00</span></h3>
+      </div>
+      <!-- "Credit completed" state -->
+      <div id='credit-completed' style='display: none;'>
+        <h1>Thank you!</h1>
+        <h3>Your new credit is <span id="completed-credit">$0.00</span></h3>
       </div>
       <!-- Member not found state -->
       <div id='not-a-member' style='display: none;'>

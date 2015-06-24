@@ -70,6 +70,9 @@ class WebService:
             socket.send_packet(pkt)
 
     # TODO: These "on" methods should be handled by Observer...
+    def onSwipeStart(self):
+        self.__broadcast("member-swipe-start")
+
     def onSwipe(self, credit, cost):
         self.__broadcast("member-swipe", credit, cost)
 
@@ -81,6 +84,12 @@ class WebService:
 
     def onNotFound(self):
         self.__broadcast("not-found")
+
+    def onCreditOnly(self):
+        self.__broadcast("credit-only")
+
+    def onCreditCompleted(self, newCredit):
+        self.__broadcast("credit-completed", newCredit)
 
     def shutdown(self):
         return # Nothing to do

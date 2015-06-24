@@ -15,6 +15,8 @@ class PopPi:
     # State information
     __acceptingFob = False
     __acceptingFunds = False
+    __creditOnlyMode = False
+    __lastCreditButtonState = 0
     __memberFob = None
     __memberCredit = None
     __deposited = None
@@ -34,7 +36,9 @@ class PopPi:
         self.__obs.on("CoinAccepted", self.__onCoinAccepted)
         self.__obs.on("MemberNotFound", self.__onMemberNotFound)
         self.__obs.on("PopPaid", self.__onPopPaid)
+        self.__obs.on("CreditCompleted", self.__onCreditCompleted)
         self.__creditOnlyPin = conf.general.creditOnlyPin
+        GPIO.setup(self.__creditOnlyPin, GPIO.IN)
 
     def start(self):
         self.__fobThread = threading.Thread(target=self.__readCardThread)
@@ -43,6 +47,9 @@ class PopPi:
         self.__coinThread = threading.Thread(target=self.__readCoinThread)
         self.__coinThread.daemon = True
         self.__coinThread.start()
+        self.__creditOnlyThread = threading.Thread(target=self.__readCreditOnlyButton)
+        self.__creditOnlyThread.daemon = True
+        self.__creditOnlyThread.start()
         self.__resetStates()
         self.__acceptingFob = True
 
@@ -63,6 +70,7 @@ class PopPi:
             print("Fob swiped while not accepting fobs: Ignoring fob " + str(card))
             return
         self.__acceptingFob = False
+        self.__webService.onSwipeStart()
         print("Fob " + str(card) + " swiped. Finding member...")
         self.__memberCredit = self.__memberService.getCredit(card)
         if self.__memberCredit is None:
@@ -76,8 +84,7 @@ class PopPi:
         self.__webService.onSwipe(self.__memberCredit, self.__popCost)
         requiredFunds = self.__getRequiredFunds()
         print("Member " + str(card) + " needs to supply " + str(requiredFunds) + " cents")
-        if self.__getRequiredFunds() <= 0:
-            self.__obs.trigger("PopPaid")
+        self.__checkRequiredFunds()
 
     def __onCoinAccepted(self, coin):
         if not self.__acceptingFunds:
@@ -86,8 +93,7 @@ class PopPi:
         self.__deposited += coin
         self.__webService.onDeposit(coin)
         print("Member inserted " + str(coin) + " cents")
-        if self.__getRequiredFunds() <= 0:
-            self.__obs.trigger("PopPaid")
+        self.__checkRequiredFunds()
 
     def __onPopPaid(self):
         self.__acceptor.inhibit(True)
@@ -100,6 +106,15 @@ class PopPi:
         print("Pop awarded to member")
         self.__resetStates()
 
+    def __onCreditCompleted(self):
+        self.__acceptor.inhibit(True)
+        self.__acceptingFunds = False
+        newCredit = self.__memberCredit + self.__deposited
+        self.__memberService.setCredit(self.__memberFob, newCredit)
+        print("Member's new credit is " + str(newCredit) + " cents")
+        self.__webService.onCreditCompleted(newCredit)
+        self.__resetStates()
+
     def __onMemberNotFound(self, card):
         print("Member not found: " + str(card))
         self.__resetStates()
@@ -108,11 +123,16 @@ class PopPi:
     def __resetStates(self):
         self.__acceptingFob = True
         self.__acceptingFunds = False
+        self.__creditOnlyMode = False
         self.__memberFob = None
         self.__memberCredit = None
         self.__deposited = None
         self.__acceptor.inhibit(True)
         print("Waiting for member")
+
+    def __checkRequiredFunds(self):
+        if self.__getRequiredFunds() <= 0 and not self.__creditOnlyMode:
+            self.__obs.trigger("PopPaid")
 
     def __getRequiredFunds(self):
         totalDeposit = self.__memberCredit + self.__deposited
@@ -120,16 +140,31 @@ class PopPi:
 
     def __readCardThread(self):
         while True:
-            if self.__rfid is None:
-                sleep(1)
-                continue
             card = self.__rfid.readCard()
             self.__obs.trigger("CardSwiped", card)
 
     def __readCoinThread(self):
         while True:
-            if self.__acceptor is None:
-                sleep(1)
-                continue
             coin = self.__acceptor.readCoin()
             self.__obs.trigger("CoinAccepted", coin)
+
+    def __readCreditOnlyButton(self):
+        sleepTime = 0.1 # 100ms
+        while True:
+            pressed = GPIO.input(self.__creditOnlyPin)
+            if self.__lastCreditButtonState == pressed:
+                sleep(sleepTime)
+                continue # Ignore: Already handled this state
+            self.__lastCreditButtonState = pressed
+            if not self.__acceptingFunds:
+                sleep(sleepTime)
+                continue # Ignore button: Don't care about this state
+            if pressed == 1:
+                if not self.__creditOnlyMode:
+                    self.__creditOnlyMode = True
+                    self.__webService.onCreditOnly()
+                    print("Member requested credit-only mode")
+                else:
+                    print("Credit-only mode completed")
+                    self.__obs.trigger("CreditCompleted")
+            sleep(sleepTime)

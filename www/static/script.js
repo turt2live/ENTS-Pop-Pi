@@ -14,10 +14,12 @@ var timeoutTime = 15000; // ms
 $(document).ready(function(){
   var socket = io.connect('/pop');
   socket.on('connect', onConnect);
+  socket.on('member-swipe-start', onSwipeStart)
   socket.on('member-swipe', function(credit, cost){
     member.credit = credit;
     member.cost = cost;
     member.deposited = 0;
+    member.newCredit = 0;
     onSwipe();
   });
   socket.on('deposit', function(amountDeposited){
@@ -29,16 +31,66 @@ $(document).ready(function(){
     onPaid();
   });
   socket.on('not-found', onMemberNotFound);
+  socket.on('credit-only', onCreditOnly);
+  socket.on('credit-completed', function(newCredit){
+    member.newCredit = newCredit;
+    onCreditCompleted();
+  });
 });
 
 // SOCKET FUNCTIONS
 // ===============================
+
+// TODO: Find a better way to do states. Angular?
+
+function onCreditOnly(){
+  $("#idle").hide();
+  $("#paying").hide();
+  $("#thanks").hide();
+  $("#not-a-member").hide();
+  $("#lookup-started").hide();
+  $("#credit-completed").hide();
+  $("#credit-only").show();
+
+  $(".paying-credit").html(toCurrency(member.credit));
+  updateAmountDue();
+  updateDeposited();
+  updateNewCredit();
+
+  if (toIdleTimer)
+    clearTimeout(toIdleTimer);
+}
+
+function onCreditCompleted(){
+  $("#idle").hide();
+  $("#paying").hide();
+  $("#thanks").hide();
+  $("#not-a-member").hide();
+  $("#lookup-started").hide();
+  $("#credit-completed").show();
+  $("#credit-only").hide();
+  $("#completed-credit").html(toCurrency(member.newCredit))
+  toIdleTimer = setTimeout(toIdle, timeoutTime);
+}
+
+function onSwipeStart(){
+  $("#idle").hide();
+  $("#paying").hide();
+  $("#thanks").hide();
+  $("#not-a-member").hide();
+  $("#lookup-started").show();
+  $("#credit-completed").hide();
+  $("#credit-only").hide();
+}
 
 function onPaid(){
   $("#idle").hide();
   $("#paying").hide();
   $("#thanks").show();
   $("#not-a-member").hide();
+  $("#lookup-started").hide();
+  $("#credit-completed").hide();
+  $("#credit-only").hide();
   $("#new-credit").html(toCurrency(member.newCredit))
   toIdleTimer = setTimeout(toIdle, timeoutTime);
 }
@@ -48,6 +100,9 @@ function toIdle(){
   $("#paying").hide();
   $("#thanks").hide();
   $("#not-a-member").hide();
+  $("#lookup-started").hide();
+  $("#credit-completed").hide();
+  $("#credit-only").hide();
 }
 
 function onConnect(){
@@ -55,11 +110,15 @@ function onConnect(){
   $("#paying").hide();
   $("#thanks").hide();
   $("#not-a-member").hide();
+  $("#lookup-started").hide();
+  $("#credit-completed").hide();
+  $("#credit-only").hide();
 }
 
 function onDeposit(){
   updateDeposited();
   updateAmountDue();
+  updateNewCredit();
 }
 
 function onSwipe(){
@@ -67,10 +126,14 @@ function onSwipe(){
   $("#paying").show();
   $("#thanks").hide();
   $("#not-a-member").hide();
+  $("#lookup-started").hide();
+  $("#credit-completed").hide();
+  $("#credit-only").hide();
 
-  $("#paying-credit").html(toCurrency(member.credit));
+  $(".paying-credit").html(toCurrency(member.credit));
   updateAmountDue();
   updateDeposited();
+  updateNewCredit();
 
   if (toIdleTimer)
     clearTimeout(toIdleTimer);
@@ -81,14 +144,21 @@ function onMemberNotFound(){
   $("#paying").hide();
   $("#thanks").hide();
   $("#not-a-member").show();
+  $("#lookup-started").hide();
+  $("#credit-completed").hide();
+  $("#credit-only").hide();
   toIdleTimer = setTimeout(toIdle, timeoutTime);
 }
 
 // HELPERS
 // ===============================
 
+function updateNewCredit(){
+  $("#deposited-credit").html(toCurrency(member.deposited + member.credit))
+}
+
 function updateDeposited(){
-  $("#paying-deposited").html(toCurrency(member.deposited));
+  $(".paying-deposited").html(toCurrency(member.deposited));
 }
 
 function updateAmountDue(){
